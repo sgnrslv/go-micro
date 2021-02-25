@@ -164,8 +164,12 @@ func (l *zaplog) Options() logger.Options {
 	return l.opts
 }
 
+func (l *zaplog) Sync() {
+	l.zap.Sync()
+}
+
 // New builds a new logger based on options
-func NewLogger(opts ...logger.Option) (logger.Logger, error) {
+func NewLogger(opts ...logger.Option) (*zaplog, error) {
 	// Default options
 	options := logger.Options{
 		Level:   logger.InfoLevel,
