@@ -42,11 +42,13 @@ func (l *zaplog) Init(opts ...logger.Option) error {
 		skip = 1
 	}
 
-	// Set log Level if not default
-	zapConfig.Level = zap.NewAtomicLevel()
-	if l.opts.Level != logger.InfoLevel {
-		zapConfig.Level.SetLevel(loggerToZapLevel(l.opts.Level))
-	}
+	//// Set log Level if not default
+	//zapConfig.Level = zap.NewAtomicLevel()
+	//if l.opts.Level != logger.InfoLevel {
+	//	zapConfig.Level.SetLevel(loggerToZapLevel(l.opts.Level))
+	//}
+
+	l.opts.Level = zapToLoggerLevel(zapConfig.Level.Level())
 
 	log, err := zapConfig.Build(zap.AddCallerSkip(skip))
 	if err != nil {
