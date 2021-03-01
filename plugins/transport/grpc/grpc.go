@@ -6,6 +6,7 @@ import (
 	"crypto/tls"
 	"net"
 
+	"github.com/asim/go-micro/v3/cmd"
 	"github.com/asim/go-micro/v3/transport"
 	maddr "github.com/asim/go-micro/v3/util/addr"
 	mnet "github.com/asim/go-micro/v3/util/net"
@@ -16,6 +17,10 @@ import (
 
 	pb "github.com/asim/go-micro/plugins/transport/grpc/v3/proto"
 )
+
+func init() {
+	cmd.DefaultTransports["grpc"] = NewTransport
+}
 
 type grpcTransport struct {
 	opts transport.Options
