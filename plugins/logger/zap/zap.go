@@ -12,7 +12,7 @@ import (
 	"github.com/asim/go-micro/v3/logger"
 )
 
-type zaplog struct {
+type Zaplog struct {
 	cfg  zap.Config
 	zap  *zap.Logger
 	opts logger.Options
@@ -20,7 +20,11 @@ type zaplog struct {
 	fields map[string]interface{}
 }
 
-func (l *zaplog) Init(opts ...logger.Option) error {
+func (l *Zaplog) GetZap() *zap.Logger {
+	return l.zap
+}
+
+func (l *Zaplog) Init(opts ...logger.Option) error {
 	var err error
 
 	for _, o := range opts {
@@ -78,7 +82,7 @@ func (l *zaplog) Init(opts ...logger.Option) error {
 	return nil
 }
 
-func (l *zaplog) Fields(fields map[string]interface{}) logger.Logger {
+func (l *Zaplog) Fields(fields map[string]interface{}) logger.Logger {
 	l.Lock()
 	nfields := make(map[string]interface{}, len(l.fields))
 	for k, v := range l.fields {
@@ -94,7 +98,7 @@ func (l *zaplog) Fields(fields map[string]interface{}) logger.Logger {
 		data = append(data, zap.Any(k, v))
 	}
 
-	zl := &zaplog{
+	zl := &Zaplog{
 		cfg:    l.cfg,
 		zap:    l.zap.With(data...),
 		opts:   l.opts,
@@ -104,11 +108,11 @@ func (l *zaplog) Fields(fields map[string]interface{}) logger.Logger {
 	return zl
 }
 
-func (l *zaplog) Error(err error) logger.Logger {
+func (l *Zaplog) Error(err error) logger.Logger {
 	return l.Fields(map[string]interface{}{"error": err})
 }
 
-func (l *zaplog) Log(level logger.Level, args ...interface{}) {
+func (l *Zaplog) Log(level logger.Level, args ...interface{}) {
 	l.RLock()
 	data := make([]zap.Field, 0, len(l.fields))
 	for k, v := range l.fields {
@@ -132,7 +136,7 @@ func (l *zaplog) Log(level logger.Level, args ...interface{}) {
 	}
 }
 
-func (l *zaplog) Logf(level logger.Level, format string, args ...interface{}) {
+func (l *Zaplog) Logf(level logger.Level, format string, args ...interface{}) {
 	l.RLock()
 	data := make([]zap.Field, 0, len(l.fields))
 	for k, v := range l.fields {
@@ -156,20 +160,20 @@ func (l *zaplog) Logf(level logger.Level, format string, args ...interface{}) {
 	}
 }
 
-func (l *zaplog) String() string {
+func (l *Zaplog) String() string {
 	return "zap"
 }
 
-func (l *zaplog) Options() logger.Options {
+func (l *Zaplog) Options() logger.Options {
 	return l.opts
 }
 
-func (l *zaplog) Sync() {
+func (l *Zaplog) Sync() {
 	l.zap.Sync()
 }
 
 // New builds a new logger based on options
-func NewLogger(opts ...logger.Option) (*zaplog, error) {
+func NewLogger(opts ...logger.Option) (*Zaplog, error) {
 	// Default options
 	options := logger.Options{
 		Level:   logger.InfoLevel,
@@ -178,7 +182,7 @@ func NewLogger(opts ...logger.Option) (*zaplog, error) {
 		Context: context.Background(),
 	}
 
-	l := &zaplog{opts: options}
+	l := &Zaplog{opts: options}
 	if err := l.Init(opts...); err != nil {
 		return nil, err
 	}
