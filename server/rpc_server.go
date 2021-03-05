@@ -426,7 +426,7 @@ func (s *rpcServer) ServeConn(sock transport.Socket) {
 					Header: msg.Header,
 					Error:  serveRequestError.Error(),
 					Type:   codec.Error,
-				}, nil)
+				}, serveRequestError)
 
 				// if the server request is an EOS error we let the socket know
 				// sometimes the socket is already closed on the other side, so we can ignore that error
