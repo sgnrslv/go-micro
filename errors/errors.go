@@ -137,7 +137,11 @@ func Equal(err1 error, err2 error) bool {
 }
 
 // FromError try to convert go error to *Error
-func FromError(err error) *Error {
+func FromError(err error) error {
+	if err == nil {
+		return nil
+	}
+
 	if verr, ok := err.(*Error); ok && verr != nil {
 		return verr
 	}
